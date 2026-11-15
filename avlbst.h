@@ -196,37 +196,30 @@ void AVLTree<Key, Value>::insert(
  * Recall: The writeup specifies that if a node has 2 children you
  * should swap with the predecessor and then remove.
  */
+
 template <class Key, class Value>
-void AVLTree<Key, Value>::remove(const Key& key)
-{
+void AVLTree<Key, Value>::remove(const Key& key) {
     AVLNode<Key, Value>* current =
-        static_cast<AVLNode<Key, Value>*>(
-            this->internalFind(key)
-        );
+        static_cast<AVLNode<Key, Value>*>(this->internalFind(key));
 
     if (current == NULL) {
         return;
     }
 
-    if (current->getLeft() != NULL &&
-        current->getRight() != NULL) {
+    if (current->getLeft() != NULL && current->getRight() != NULL) {
+        AVLNode<Key, Value>* pred = current->getLeft();
 
-        AVLNode<Key, Value>* pred =
-            static_cast<AVLNode<Key, Value>*>(
-                this->predecessor(current)
-            );
+        while (pred->getRight() != NULL) {
+            pred = pred->getRight();
+        }
 
         nodeSwap(current, pred);
     }
 
-    AVLNode<Key, Value>* child = NULL;
-
-    if (current->getLeft() != NULL) {
-        child = current->getLeft();
-    }
-    else {
-        child = current->getRight();
-    }
+    AVLNode<Key, Value>* child =
+        (current->getLeft() != NULL)
+            ? current->getLeft()
+            : current->getRight();
 
     AVLNode<Key, Value>* parent = current->getParent();
 
@@ -250,6 +243,7 @@ void AVLTree<Key, Value>::remove(const Key& key)
 
     while (node != NULL) {
         AVLNode<Key, Value>* newRoot = rebalance(node);
+
         node = newRoot->getParent();
     }
 
