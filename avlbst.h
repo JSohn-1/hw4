@@ -375,6 +375,7 @@ AVLNode<Key, Value>* AVLTree<Key, Value>::rebalance(
     }
 
     AVLNode<Key, Value>* left = rebalance(node->getLeft());
+
     node->setLeft(left);
 
     if (left != NULL) {
@@ -382,6 +383,7 @@ AVLNode<Key, Value>* AVLTree<Key, Value>::rebalance(
     }
 
     AVLNode<Key, Value>* right = rebalance(node->getRight());
+
     node->setRight(right);
 
     if (right != NULL) {
@@ -390,19 +392,27 @@ AVLNode<Key, Value>* AVLTree<Key, Value>::rebalance(
 
     updateBalance(node);
 
-    int balance = node->getBalance();
+    if (node->getBalance() > 1) {
 
-    if (balance > 1) {
         if (node->getRight()->getBalance() < 0) {
-            rotateRight(node->getRight());
+            AVLNode<Key, Value>* newRight =
+                rotateRight(node->getRight());
+
+            node->setRight(newRight);
+            newRight->setParent(node);
         }
 
         return rotateLeft(node);
     }
 
-    if (balance < -1) {
+    if (node->getBalance() < -1) {
+
         if (node->getLeft()->getBalance() > 0) {
-            rotateLeft(node->getLeft());
+            AVLNode<Key, Value>* newLeft =
+                rotateLeft(node->getLeft());
+
+            node->setLeft(newLeft);
+            newLeft->setParent(node);
         }
 
         return rotateRight(node);
@@ -410,6 +420,5 @@ AVLNode<Key, Value>* AVLTree<Key, Value>::rebalance(
 
     return node;
 }
-
 
 #endif
